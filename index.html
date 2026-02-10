@@ -1,10 +1,74 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>Bebo Dent AR Demo</title>
+  <meta charset="utf-8">
+  <title>Bebo Dent – Smart Size Selector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fb; padding:20px; }
+    h1 { color:#003366; }
+    label { display:block; margin-top:15px; font-weight:bold; }
+    select, input, button {
+      width:100%; padding:10px; margin-top:5px; font-size:16px;
+    }
+    button { background:#003366; color:white; border:none; margin-top:20px; }
+    .result { margin-top:20px; font-size:18px; font-weight:bold; }
+  </style>
 </head>
+
 <body>
-  <h1>Bebo Dent WebAR Demo</h1>
-  <p>QR → Size Selector + AR Pilot Version</p>
+
+<h1>Bebo Dent – Smart Crown Size Selector</h1>
+<p>Enter the measured Mesio-Distal (MD) width to get the recommended crown size.</p>
+
+<label>Tooth Type</label>
+<select id="tooth">
+  <option value="max_central">Maxillary Central Incisor</option>
+  <option value="max_lateral">Maxillary Lateral Incisor</option>
+  <option value="max_1m">Maxillary 1st Primary Molar</option>
+  <option value="max_2m">Maxillary 2nd Primary Molar</option>
+  <option value="mand_1m">Mandibular 1st Primary Molar</option>
+  <option value="mand_2m">Mandibular 2nd Primary Molar</option>
+</select>
+
+<label>Measured MD Width (mm)</label>
+<input type="number" step="0.1" id="md" placeholder="e.g. 7.6">
+
+<button onclick="calculate()">Get Recommended Size</button>
+
+<div class="result" id="result"></div>
+
+<script>
+const data = {
+  max_central: {1:6.5,2:6.9,3:7.3,4:7.6,5:8,6:8.4},
+  max_lateral: {1:5,2:5.4,3:5.8,4:6.2,5:6.6,6:7},
+  max_1m: {2:6.8,3:7.2,4:7.6,5:8,6:8.4,7:8.8},
+  max_2m: {2:9.1,3:9.5,4:9.9,5:10.4,6:10.8,7:11.2},
+  mand_1m:{2:7.7,3:8.2,4:8.7,5:9.1,6:9.5,7:10},
+  mand_2m:{2:9.5,3:10,4:10.5,5:10.9,6:11.3,7:11.7}
+};
+
+function calculate() {
+  const tooth = document.getElementById("tooth").value;
+  const md = parseFloat(document.getElementById("md").value);
+  if (!md) { alert("Please enter MD value"); return; }
+
+  let closestSize = null;
+  let minDiff = Infinity;
+
+  for (let size in data[tooth]) {
+    let diff = Math.abs(data[tooth][size] - md);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestSize = size;
+    }
+  }
+
+  document.getElementById("result").innerHTML =
+    "Recommended Crown Size: <span style='color:#003366'>Size " + closestSize + "</span><br><br>" +
+    "<em>Visual AR confirmation will be added in the next phase.</em>";
+}
+</script>
+
 </body>
 </html>
